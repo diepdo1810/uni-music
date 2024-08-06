@@ -3,16 +3,16 @@ import Vuex from "vuex";
 import {
 	getCache,
 	setCache
-} from "@/utils/cache.js";
+} from "../utils/cache.js";
 import {
 	login
-} from "@/api/modules/user.js";
+} from "../api/modules/user.js";
 import {
 	getMusicUrl
-} from "@/api/modules/search.js";
+} from "../api/modules/search.js";
 import {
 	audio
-} from "@/plugins/audio/index.js";
+} from "../plugins/audio/index.js";
 Vue.use(Vuex);
 
 const store = new Vuex.Store({

@@ -1,13 +1,8 @@
 import {
 	getCache
-} from "@/utils/cache.js"
+} from "../utils/cache.js"
 
-const baseURL = 'http://47.98.43.231:3000'
-
-
-
-
-
+const baseURL = 'https://neteasecloudmusicapi.vercel.app'
 
 const request = {
 	get(url, data) {
@@ -46,7 +41,6 @@ const request = {
 
 	},
 	post(url, data) {
-
 		return new Promise((resolve, reject) => {
 			uni.request({
 				url: baseURL + url,

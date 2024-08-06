@@ -189,7 +189,7 @@ export default {
 		top: 30%;
 		bottom: 50px;
 		.tabs {
-			box-shadow: 0 0 0.8px rgb(0, 0, 0 / 10%);
+			box-shadow: 0 0 0.8px rgba(0, 0, 0, 0.1);
 			width: 100%;
 			height: 45px;
 			align-items: center;

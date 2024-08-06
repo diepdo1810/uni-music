@@ -198,11 +198,9 @@ export default {
 			}
 		}
 	}
-	/deep/ {
-		.input-placeholder {
+	.input-placeholder {
 			color: rgb(194, 194, 194);
 			font-size: 30rpx;
 		}
-	}
 }
 </style>
