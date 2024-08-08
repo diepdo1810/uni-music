@@ -1,5 +1,5 @@
-import request from '@/utils/request'
-import {getCache} from "@/utils/cache.js"
+import request from '../../utils/request'
+import {getCache} from "../../utils/cache.js"
 
 /**
  *  首页的轮播图 banner

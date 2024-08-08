@@ -1,4 +1,5 @@
 <template>
+
 	<view class="login-container">
 		<image src="../../static/loginBg.png" class="background-img"></image>
 		<view class="absolve-wrapper">
@@ -17,12 +18,15 @@
 				</view>
 				<button class="cu-btn round login-button lg cu-load" :class="{ loading: loading }" @click="getUserInfo">登录</button>
 			</view>
+			<view v-if="qrCodeSvg" class="qr-login">
+				<image :src="qrCodeSvg" class="qr-code"></image>
+			</view>
 			<view class="other-login">
 				<view class="other-text">第三方登录</view>
 				<view class="login-list">
 					<i class="iconfont icon-weixin other-item" @click="handleTest"></i>
 					<i class="iconfont icon-qq other-item" @click="handleTest"></i>
-					<i class="iconfont icon-weibo other-item" @click="handleTest"></i>
+					<i class="iconfont icon-weibo other-item" @click="fetchQrCodeKey"></i>
 				</view>
 			</view>
 		</view>
@@ -30,15 +34,21 @@
 </template>
 
 <script>
+import QRCode from 'qrcode';
+
 export default {
 	data() {
 		return {
 			loading: false,
 			isText: false,
 			userInfo: {
-				phone: '100000',
-				password: '123456'
-			}
+				phone: '0962686228',
+				password: 'Dophidiep1810@'
+			},
+			qrCodeKey: '',
+			qrCodeSvg: '',
+			qrCodeCheckInterval: null,
+			qrCodeInformation: '打开网易云音乐APP扫码登录',
 		};
 	},
 	methods: {
@@ -76,7 +86,90 @@ export default {
 				 icon :'none',
 			     duration: 2000
 			 });
-		}
+		},
+		async fetchQrCodeKey() {
+			const data = await this.$api.loginQrCodeKey({
+				timestamp: new Date().getTime()
+			})
+			
+			if (data.code === 200) {
+				this.qrCodeKey = data.unikey;
+				QRCode.toString(
+					`https://music.163.com/login?codekey=${this.qrCodeKey}`,
+					{
+					width: 192,
+					margin: 0,
+					color: {
+						dark: '#335eea',
+						light: '#00000000',
+					},
+					type: 'svg',
+					}
+				)
+				.then(svg => {
+					this.qrCodeSvg = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+				})
+				.catch(err => {
+					console.error(err);
+				})
+				.finally(() => {
+					uni.showToast({
+						title: '请打开网易云音乐APP扫码登录',
+						icon: 'none',
+						duration: 2000
+					});
+				});
+
+				// this.checkQrCodeLogin();
+			}
+    	},
+		checkQrCodeLogin() {
+			// 清除二维码检测
+			clearInterval(this.qrCodeCheckInterval);
+			this.qrCodeCheckInterval = setInterval(() => {
+				if (this.qrCodeKey === '') return;
+				const key = this.qrCodeKey;
+				this.$api.loginQrCodeCheck({
+					key,
+					timestamp: new Date().getTime()
+				}).then(result => {
+					console.log(result);
+				if (result.code === 800) {
+					this.getQrCodeKey(); // 重新生成QrCode
+					this.qrCodeInformation = '二维码已失效，请重新扫码';
+				} else if (result.code === 802) {
+					this.qrCodeInformation = '扫描成功，请在手机上确认登录';
+				} else if (result.code === 801) {
+					this.qrCodeInformation = '打开网易云音乐APP扫码登录';
+				} else if (result.code === 803) {
+					clearInterval(this.qrCodeCheckInterval);
+					this.qrCodeInformation = '登录成功，请稍等...';
+					result.code = 200;
+					result.cookie = result.cookie.replaceAll(' HTTPOnly', '');
+					this.handleLoginResponse(result);
+				}
+				});
+			}, 1000);
+    	},
+		handleLoginResponse(data) {
+			console.log(data);
+			// if (!data) {
+			// 	this.processing = false;
+			// 	return;
+			// }
+			// if (data.code === 200) {
+			// 	setCookies(data.cookie);
+			// 	this.updateData({ key: 'loginMode', value: 'account' });
+			// 	this.$store.dispatch('fetchUserProfile').then(() => {
+			// 	this.$store.dispatch('fetchLikedPlaylist').then(() => {
+			// 		this.$router.push({ path: '/library' });
+			// 	});
+			// 	});
+			// } else {
+			// 	this.processing = false;
+			// 	nativeAlert(data.msg ?? data.message ?? '账号或密码错误，请检查');
+			// }
+    	}
 	}
 };
 </script>

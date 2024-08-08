@@ -190,6 +190,8 @@ const getMusic = (id) => {
 	return new Promise(async (resolve, reject) => {
 		let res = await getMusicUrl({
 			id: id,
+			br: 320000,
+			realIP: '211.161.244.70'
 		});
 		let musicList = res.data || [];
 		if (musicList.length > 0) {

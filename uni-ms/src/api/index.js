@@ -4,6 +4,7 @@ const search=require('./modules/search')
 const song=require('./modules/song')
 const rankList=require('./modules/rankList')
 const singer=require('./modules/singer')
+const auth=require('./modules/auth')
 
 export default{
 	...home,
@@ -11,7 +12,8 @@ export default{
 	...search,
 	...song,
 	...rankList,
-	...singer
+	...singer,
+	...auth
 }
 
 
